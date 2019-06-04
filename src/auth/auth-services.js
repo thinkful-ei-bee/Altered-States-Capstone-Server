@@ -1,3 +1,6 @@
+/* eslint-disable no-useless-escape */
+'use strict';
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const xss  = require('xss');
@@ -25,7 +28,7 @@ const AuthServices = {
       return 'Password must not begin or end with spaces';
     }
     if (!REGEX.test(password)) {
-      return 'Password must contain an uppercase and lowercase letter, a number, and a character';
+      return 'Password must contain an uppercase and lowercase letter, a number, and a special character';
     }
     return null;
   },
