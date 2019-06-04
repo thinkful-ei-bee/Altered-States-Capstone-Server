@@ -46,7 +46,6 @@ AuthRouter
               name,
               username,
               password: hashedPassword,
-              date_created: 'now()',
             };
 
             // Insert new user into db
