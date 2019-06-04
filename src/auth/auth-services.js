@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const xss  = require('xss');
+const config = require('../config');
 
 const REGEX = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/;
 
@@ -57,6 +59,36 @@ const AuthServices = {
       date_created: new Date(user.date_created),
     };
   },
+
+  getUserWithUsername(db, username) {
+    return db('users')
+      .where({ username })
+      .first();
+  },
+
+  comparePasswords(loginPassword, hash) {
+    return bcrypt.compare(loginPassword, hash);
+  },
+
+  createJwt(subject, payload) {
+    return jwt.sign(payload, config.JWT_SECRET, {
+      subject,
+      expiresIn: config.JWT_EXPIRY,
+      algorithm: 'HS256'
+    });
+  },
+
+  verifyJwt(token) {
+    return jwt.verify(token, config.JWT_SECRET, {
+      algorithms: ['HS256'],
+    });
+  },
+
+  parseBasicToken(token) {
+    return Buffer.from(token, 'base64')
+      .toString()
+      .split(':');
+  }
 };
 
 module.exports = AuthServices;

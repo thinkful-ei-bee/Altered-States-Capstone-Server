@@ -12,8 +12,8 @@ AuthRouter
     console.log('REQ BODY: ', req.body);
     
     // Grab creds
-    const { username, password } = req.body;
-    const newUser = { username, password };
+    const { name, username, password } = req.body;
+    const newUser = { name, username, password };
 
     // Check for username and password
     for (const [key, value] of Object.entries(newUser)) {
@@ -42,6 +42,7 @@ AuthRouter
           .then(hashedPassword => {
             // create a new user obj with encypted password
             const newUser = {
+              name,
               username,
               password: hashedPassword,
               date_created: 'now()',
@@ -57,6 +58,54 @@ AuthRouter
           });
       })
       .catch(next);
+  });
+
+AuthRouter
+  .route('/login')
+  .post(bodyParser, (req, res, next) => {
+    
+    // Grab user creds
+    const { username, password } = req.body;
+    const userCreds = { username, password };
+
+    // Check if username and password are present
+    for (const [key, value] of Object.entries(userCreds)) {
+      if (!value) {
+        return res.status(400).json({
+          error: `Missing ${key} in request body`
+        });
+      }
+    }
+
+    AuthServices.getUserWithUsername(req.app.get('db'), userCreds.username)
+      .then(dbUser => {
+
+        if (!dbUser) {
+          return res.status(400).json({
+            error: 'Incorrect username or password'
+          });
+        }
+
+        return AuthServices.comparePasswords(userCreds.password, dbUser.password)
+          .then(match => {
+            if (!match) {
+              return res.status(400).json({ 
+                error: 'Incorrect username or password' 
+              });
+            }
+
+            const sub = dbUser.username;
+            const payload = { user_id: dbUser.id };
+
+            res.send({
+              authToken: AuthServices.createJwt(sub, payload),
+            });
+          });
+      })
+      .catch(err => {
+        console.error('ERROR: ', err);
+        next();
+      });
   });
 
 module.exports = AuthRouter;
