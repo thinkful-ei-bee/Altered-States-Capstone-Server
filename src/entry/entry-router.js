@@ -1,5 +1,7 @@
 const express = require('express');
 const requireAuth = require('../middleware/jwt-auth');
+const EntryServices = require('./entry-services');
+const path = require('path');
 const EntryRouter = express.Router();
 const bodyParser = express.json();
 
@@ -36,7 +38,15 @@ EntryRouter
       }
     }
 
+    newEntry.user_id = req.user.id;
 
+    EntryServices.insertEntry(req.app.get('db'), newEntry)
+      .then(entry => {
+        return res.status(201)
+          .location(path.posix.join(req.originalUrl, `/${entry.id}`))
+          .json(entry);
+      })
+      .catch(next);
   });
 
 module.exports = EntryRouter;
