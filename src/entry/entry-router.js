@@ -10,6 +10,7 @@ EntryRouter
   .post(requireAuth, bodyParser, (req, res, next) => {
     const { 
       text,
+      happiness,
       anger,
       fear,
       joy,
@@ -21,6 +22,7 @@ EntryRouter
 
     const newEntry = { 
       text,
+      happiness,
       anger,
       fear,
       joy,
@@ -30,13 +32,17 @@ EntryRouter
       tenative,
     };
 
-    for (const [key, value] of Object.entries(newEntry)) {
-      if (!value) {
-        return res.status(400).json({
-          error: `Missing ${key} in request body`
-        });
-      }
-    }
+    
+    // This is commented out because none of these
+    // properties are actually required
+
+    // for (const [key, value] of Object.entries(newEntry)) {
+    //   if (!value) {
+    //     return res.status(400).json({
+    //       error: `Missing ${key} in request body`
+    //     });
+    //   }
+    // }
 
     newEntry.user_id = req.user.id;
 
@@ -61,6 +67,26 @@ EntryRouter
     EntryServices.getById(req.app.get('db'), id)
       .then(entry => {
         res.status(200).json(entry);
+      })
+      .catch(next);
+  });
+
+EntryRouter
+  .route('/list')
+  .get(requireAuth, (req, res, next) => {
+    const id = req.user.id;
+
+    if (!id) {
+      return res.status(400).json({ error: 'Missing id in request' });
+    }
+
+    EntryServices.getAllByUserId(req.app.get('db'), id)
+      .then(entries => {
+        if (!entries) {
+          return res.status(200).json();
+        }
+
+        return res.status(200).json(entries);
       })
       .catch(next);
   });

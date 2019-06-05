@@ -14,6 +14,12 @@ const EntryServices = {
       .returning('*')
       .then(([ entry ]) => entry)
       .then(entry => EntryServices.getById(db, entry.id));
+  },
+
+  getAllByUserId(db, id) {
+    return db('entry')
+      .select('*')
+      .where('entry.user_id', id);
   }
 };
 
