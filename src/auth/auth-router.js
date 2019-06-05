@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const AuthServices = require('./auth-services');
 const path = require('path');
