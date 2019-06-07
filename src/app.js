@@ -20,7 +20,7 @@ app.use(cors());
 app.use(helmet());
 
 app.use('/api/auth', AuthRouter);
-app.use('api/entry', EntryRouter);
+app.use('/api/entry', EntryRouter);
 
 app.get('/', (req, res) => {
   res.send('Hello, world!');

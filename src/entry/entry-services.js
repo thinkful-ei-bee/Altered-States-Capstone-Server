@@ -1,3 +1,5 @@
+'use strict';
+
 const EntryServices = {
 
   getById(db, id) {
