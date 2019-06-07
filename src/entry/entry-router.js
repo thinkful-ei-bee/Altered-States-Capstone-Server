@@ -1,35 +1,55 @@
+'use strict';
+
 const express = require('express');
 const requireAuth = require('../middleware/jwt-auth');
 const EntryServices = require('./entry-services');
 const path = require('path');
 const EntryRouter = express.Router();
-const bodyParser = express.json();
+const jsonBodyParser = express.json();
 
 EntryRouter
   .route('/')
-  .post(requireAuth, bodyParser, (req, res, next) => {
+  .post(requireAuth, jsonBodyParser, (req, res, next) => {
     const { 
       text,
       happiness,
-      anger,
-      fear,
-      joy,
-      sadness,
-      analytical,
-      confident,
-      tenative,
+      face_url,
+      Anger,
+      Joy,
+      Fear,
+      Sadness,
+      Analytical,
+      Confident,
+      Tentative,
+      face_anger,
+      face_contempt,
+      face_disgust,
+      face_fear,
+      face_happiness,
+      face_neutral,
+      face_sadness,
+      face_surprise
     } = req.body;
 
     const newEntry = { 
       text,
       happiness,
-      anger,
-      fear,
-      joy,
-      sadness,
-      analytical,
-      confident,
-      tenative,
+      face_url,
+      tone_anger: Anger,
+      tone_joy: Joy,
+      tone_fear: Fear,
+      tone_sadness: Sadness,
+      tone_analytical: Analytical,
+      tone_confident: Confident,
+      tone_tentative: Tentative,
+      face_anger,
+      face_contempt,
+      face_disgust,
+      face_fear,
+      face_happiness,
+      face_neutral,
+      face_sadness,
+      face_surprise
     };
 
     
