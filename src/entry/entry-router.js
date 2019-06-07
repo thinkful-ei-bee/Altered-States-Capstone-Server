@@ -76,7 +76,7 @@ EntryRouter
   });
 
 EntryRouter
-  .route('/:id')
+  .route('/id/:id')
   .get(requireAuth, (req, res, next) => {
     const id = req.params.id;
 
