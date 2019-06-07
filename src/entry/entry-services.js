@@ -21,7 +21,8 @@ const EntryServices = {
   getAllByUserId(db, id) {
     return db('entry')
       .select('*')
-      .where('entry.user_id', id);
+      // .where('entry.user_id', id);
+      .where('user_id', id);
   }
 };
 
