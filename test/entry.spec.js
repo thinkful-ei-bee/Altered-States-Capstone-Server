@@ -20,16 +20,16 @@ describe('Entry', () => {
     app.set('db', db);
   });
 
-  beforeEach('insert users', () => {
-    helpers.seedUsers(db, testUsers);
-  });
-
   before('cleanup', () => knexCleaner.clean(db));
   afterEach('cleanup', () => knexCleaner.clean(db));
 
   after('disconnect from db', () => db.destroy());
 
+  beforeEach('insert users', () => {
+    helpers.seedUsers(db, testUsers);
+  });
   describe('POST /api/entry', () => {
+
 
     const entry = testEntries[0];
 
@@ -92,11 +92,40 @@ describe('Entry', () => {
   });
 
   describe('GET /api/entry/list', () => {
+
     it ('returns 200 and an array when valid user & populated', () => {
+      before('insert users', () => helpers.seedUsers(db, testUsers));
       return supertest(app)
         .get('/api/entry/list')
         .set('authorization', helpers.makeAuthHeader(testUser))
         .expect(200);
+    });
+
+    context('Given an XSS attack with an entry', () => {
+      const { maliciousArticle, expectedArticle } = helpers.makeMaliciousArticle(testUser);
+      console.log('EXPECTED ARTICLE: ', expectedArticle);
+
+      const evilUser = {
+        id: 666,
+        name: 'Luke',
+        password: 'What3489efhv',
+        username: 'GakHacker'
+      };
+
+      beforeEach('seed malicious entry', () => {
+        return helpers.seedMaliciousArticle(db, evilUser, maliciousArticle);
+      });
+
+      it('removes XSS attack content', () => {
+        return supertest(app)
+          .get('/api/entry/list')
+          .set('Authorization', helpers.makeAuthHeader(evilUser))
+          .expect(200)
+          .expect(res => {
+            console.log('RES: ', res.body);
+            expect(res.body.text).to.eql(expectedArticle.text);
+          });
+      });
     });
   });
 });

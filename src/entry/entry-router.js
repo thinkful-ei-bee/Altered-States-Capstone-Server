@@ -106,7 +106,9 @@ EntryRouter
           return res.status(200).json();
         }
 
-        return res.status(200).json(entries);
+        console.log('ENTRIES: ', entries);
+
+        return res.status(200).json(entries.map(EntryServices.serializeEntry));
       })
       .catch(next);
   });

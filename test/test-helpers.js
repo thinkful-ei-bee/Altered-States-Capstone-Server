@@ -140,6 +140,35 @@ function makeAuthHeader(user, secret=process.env.JWT_SECRET) {
   return `Bearer ${token}`;
 }
 
+function makeMaliciousArticle(user) {
+  const maliciousArticle = {
+    id: 911,
+    date_created: new Date(),
+    user_id: user.id,
+    text: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
+  }
+  const expectedArticle = {
+    ...makeExpectedEntry([user], maliciousArticle),
+    text: `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`,
+  }
+  return {
+    maliciousArticle,
+    expectedArticle,
+  }
+}
+
+function seedMaliciousArticle(db, user, entry) {
+  return db
+    .into('user')
+    .insert([user])
+    .then(() =>
+      db
+        .into('entry')
+        .insert([entry])
+    )
+    .catch(e => console.log('ERROR: ', e))
+}
+
 function makeExpectedEntry(userTable, entry) {
   const user = userTable.find(author => author.id === entry.user_id);
 
@@ -175,6 +204,8 @@ module.exports = {
   makeUsersArray,
   makeEntriesArray,
   seedUsers,
+  seedMaliciousArticle,
   makeAuthHeader,
+  makeMaliciousArticle,
   makeExpectedEntry,
 };
