@@ -33,7 +33,7 @@ const EntryServices = {
       date_created: entry.date_created,
       text: xss(entry.text),
       happiness: entry.happiness,
-      face_url: entry.face_url,
+      face_url: xss(entry.face_url),
       tone_joy: entry.tone_joy,
       tone_fear: entry.tone_fear,
       tone_sadness: entry.tone_sadness,
