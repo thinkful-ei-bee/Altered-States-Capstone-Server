@@ -6,5 +6,8 @@ module.exports = {
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRY: process.env.JWT_EXPIRY || '3h',
   DATABASE_URL: process.env.DATABASE_URL, 
-  TEST_DATABASE_URL: process.env.TEST_DATABASE_URL
+  TEST_DATABASE_URL: process.env.TEST_DATABASE_URL,
+
+  FACE_KEY: process.env.FACE_KEY,
+  FACE_SECRET: process.env.FACE_SECRET
 };

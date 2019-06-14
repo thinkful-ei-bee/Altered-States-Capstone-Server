@@ -6,6 +6,8 @@ const EntryServices = require('./entry-services');
 const path = require('path');
 const EntryRouter = express.Router();
 const jsonBodyParser = express.json();
+const axios = require('axios');
+const config = require('../config');
 
 EntryRouter
   .route('/')
@@ -109,6 +111,18 @@ EntryRouter
         console.log('ENTRIES: ', entries);
 
         return res.status(200).json(entries.map(EntryServices.serializeEntry));
+      })
+      .catch(next);
+  });
+
+EntryRouter
+  .route('/selfie/:id')
+  .delete(requireAuth, (req, res, next) => {
+    const id = req.params.id;
+
+    axios.delete(`https://${config.FACE_KEY}:${config.FACE_SECRET}@api.cloudinary.com/v1_1/mood-flux/resources/image/upload?public_ids=selfies/${id}`)
+      .then((response) => {
+        return res.status(200).json(response.data);
       })
       .catch(next);
   });
