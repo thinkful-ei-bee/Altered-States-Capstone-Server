@@ -27,6 +27,14 @@ const EntryServices = {
       .where('user_id', id);
   },
 
+  deleteEntry(db, id) {
+    return db
+      .into('entry')
+      .del()
+      .where('id', id)
+      .returning('id');
+  },
+
   serializeEntry(entry) {
     return {
       id: entry.id,
