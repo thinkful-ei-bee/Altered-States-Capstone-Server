@@ -15,6 +15,18 @@ function cleanTables(db) {
   });
 }
 
+async function seedEntries(db, users, entries) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users);
+    await trx.into('entry').insert(entries);
+
+    await trx.raw(
+      `SELECT setval('entry_id_seq', ?)`,
+      [entries[entries.length - 1].id],
+    );
+  });
+}
+
 
 function makeUsersArray() {
   return [
@@ -48,13 +60,13 @@ function makeEntriesArray() {
       text: 'Hi, this is great.',
       happiness: 40,
       face_url: 'www.images.com/hi',
-      Joy: 33,
-      Fear: 0,
-      Sadness: 0,
-      Anger: 12,
-      Analytical: 0,
-      Confident: 0,
-      Tentative: 19,
+      tone_joy: 3,
+      tone_fear: 0,
+      tone_sadness: 10,
+      tone_anger: 0,
+      tone_analytical: 40,
+      tone_confident: 0,
+      tone_tentative: 0,
       face_anger: 45,
       face_contempt: 12,
       face_disgust: 0,
@@ -205,6 +217,7 @@ module.exports = {
   makeEntriesArray,
   seedUsers,
   seedMaliciousArticle,
+  seedEntries,
   makeAuthHeader,
   makeMaliciousArticle,
   makeExpectedEntry,
