@@ -112,7 +112,7 @@ AuthRouter
   .route('/refresh')
   .post(requireAuth, (req, res) => {
     const sub = req.user.username;
-    const payload = { user_id: req.user.id };
+    const payload = { user_id: req.user.id, name: req.user.name };
 
     if (req.user.username) {
       res.send({

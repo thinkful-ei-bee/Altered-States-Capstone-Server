@@ -19,16 +19,17 @@ describe('Auth', () => {
     app.set('db', db);
   });
 
-  beforeEach('seed users', () => {
-    helpers.seedUsers(db, testUsers);
-  });
-
   before('cleanup', () => knexCleaner.clean(db));
   afterEach('cleanup', () => knexCleaner.clean(db));
 
   after('disconnect from db', () => db.destroy());
 
   describe('POST /api/auth/login', () => {
+
+    beforeEach('seed users', () => {
+      helpers.seedUsers(db, testUsers);
+    });
+
     const requiredFields = ['username', 'password'];
 
     requiredFields.forEach(field => {
@@ -66,6 +67,30 @@ describe('Auth', () => {
       return supertest(app)
         .post('/api/auth/login')
         .send(userValidCreds)
+        .expect(200, { authToken: expectedToken });
+    });
+  });
+
+  describe('POST /api/auth/refresh', () => {
+
+    beforeEach('seed users', () => {
+      helpers.seedUsers(db, testUsers);
+    });
+
+    it('responds 200 and JWT token when using secret', () => {
+      const expectedToken = jwt.sign(
+        { user_id: testUser.id, name: testUser.name },
+        process.env.JWT_SECRET,
+        {
+          subject: testUser.username,
+          expiresIn: process.env.JWT_EXPIRY,
+          algorithm: 'HS256',
+        }
+      );
+
+      return supertest(app)
+        .post('/api/auth/refresh')
+        .set('Authorization', helpers.makeAuthHeader(testUser))
         .expect(200, { authToken: expectedToken });
     });
   });
