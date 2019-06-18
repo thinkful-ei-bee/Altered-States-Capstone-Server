@@ -20,7 +20,7 @@ describe('Protected Endpoints', () => {
   });
 
   before('cleanup', () => knexCleaner.clean(db));
-  //afterEach('cleanup', () => knexCleaner.clean(db));
+  afterEach('cleanup', () => knexCleaner.clean(db));
 
   after('disconnect from db', () => db.destroy());
 

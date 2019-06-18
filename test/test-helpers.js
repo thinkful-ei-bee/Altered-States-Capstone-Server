@@ -15,7 +15,7 @@ function cleanTables(db) {
   });
 }
 
-async function seedEntries(db, users, entries) {
+function seedEntries(db, users, entries) {
   return db.transaction(async trx => {
     await seedUsers(trx, users);
     await trx.into('entry').insert(entries);
