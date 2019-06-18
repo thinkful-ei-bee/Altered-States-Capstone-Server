@@ -88,7 +88,7 @@ EntryRouter
 
     EntryServices.getById(req.app.get('db'), id)
       .then(entry => {
-        res.status(200).json(entry);
+        res.status(200).json(EntryServices.serializeEntry(entry));
       })
       .catch(next);
   });
@@ -108,8 +108,6 @@ EntryRouter
           return res.status(200).json();
         }
 
-        console.log('ENTRIES: ', entries);
-
         return res.status(200).json(entries.map(EntryServices.serializeEntry));
       })
       .catch(next);
@@ -122,6 +120,10 @@ EntryRouter
 
     if (!id) {
       return res.status(400).json({ error: 'Missing id in request' });
+    }
+
+    if (typeof id !== 'number') {
+      return res.status(400).json({ error: 'Request id must be a number' });
     }
 
     EntryServices.deleteEntry(req.app.get('db'), id)

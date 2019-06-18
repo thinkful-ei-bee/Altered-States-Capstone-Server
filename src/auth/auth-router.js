@@ -11,8 +11,6 @@ const bodyParser = express.json();
 AuthRouter
   .route('/register')
   .post(bodyParser, (req, res, next) => {
-
-    console.log('REQ BODY: ', req.body);
     
     // Grab creds
     const { name, username, password } = req.body;

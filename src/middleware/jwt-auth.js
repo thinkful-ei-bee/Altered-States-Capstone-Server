@@ -11,6 +11,7 @@ function requireAuth(req, res, next) {
   }
 
   try {
+
     const payload = AuthServices.verifyJwt(bearerToken);
 
     AuthServices.getUserWithUsername(
@@ -24,10 +25,13 @@ function requireAuth(req, res, next) {
 
       req.user = user;
       next();
-    });
+    })
+      .catch(err => {
+        console.error(err);
+        next(err);
+      });
   } catch(error) {
-    console.error(error);
-    next(error);
+    res.status(401).json({ error: 'Unauthorized request' });
   }
 }
 
