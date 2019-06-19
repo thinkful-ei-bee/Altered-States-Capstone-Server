@@ -11,8 +11,6 @@ const bodyParser = express.json();
 AuthRouter
   .route('/register')
   .post(bodyParser, (req, res, next) => {
-
-    console.log('REQ BODY: ', req.body);
     
     // Grab creds
     const { name, username, password } = req.body;
@@ -114,7 +112,7 @@ AuthRouter
   .route('/refresh')
   .post(requireAuth, (req, res) => {
     const sub = req.user.username;
-    const payload = { user_id: req.user.id };
+    const payload = { user_id: req.user.id, name: req.user.name };
 
     if (req.user.username) {
       res.send({

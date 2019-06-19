@@ -5,6 +5,29 @@ const knex = require('knex');
 const knexCleaner = require('knex-cleaner');
 const helpers = require('./test-helpers');
 
+const entry = {
+  id: 1,
+  text: 'Hi, this is great.',
+  happiness: 40,
+  face_url: 'www.images.com/hi',
+  Joy: 3,
+  Fear: 0,
+  Sadness: 10,
+  Anger: 0,
+  Analytical: 40,
+  Confident: 0,
+  Tentative: 0,
+  face_anger: 45,
+  face_contempt: 12,
+  face_disgust: 0,
+  face_fear: 30,
+  face_happiness: 0,
+  face_neutral: 0,
+  face_sadness: 0,
+  face_surprise: 0,
+  user_id: 1
+};
+
 describe('Entry', () => {
   let db;
 
@@ -30,9 +53,6 @@ describe('Entry', () => {
   });
   describe('POST /api/entry', () => {
 
-
-    const entry = testEntries[0];
-
     it('returns 201 when user submits entry', () => {
       return supertest(app)
         .post('/api/entry')
@@ -40,6 +60,7 @@ describe('Entry', () => {
         .send( entry )
         .expect(201)
         .expect(res => {
+          console.log('RES BODY: ', res.body);
           expect(res.body).to.have.property('id');
           expect(res.body.text).to.eql(entry.text);
           expect(res.body.happiness).to.eql(entry.happiness);
@@ -103,7 +124,6 @@ describe('Entry', () => {
 
     context('Given an XSS attack with an entry', () => {
       const { maliciousArticle, expectedArticle } = helpers.makeMaliciousArticle(testUser);
-      console.log('EXPECTED ARTICLE: ', expectedArticle);
 
       const evilUser = {
         id: 666,
@@ -118,14 +138,28 @@ describe('Entry', () => {
 
       it('removes XSS attack content', () => {
         return supertest(app)
-          .get('/api/entry/list')
+          .get(`/api/entry/id/${maliciousArticle.id}`)
           .set('Authorization', helpers.makeAuthHeader(evilUser))
           .expect(200)
           .expect(res => {
-            console.log('RES: ', res.body);
             expect(res.body.text).to.eql(expectedArticle.text);
           });
       });
+    });
+  });
+
+  describe('DELETE /api/entry/:id', () => {
+    it('returns 400 error when no id', () => {
+      return supertest(app)
+        .delete('/api/entry/j')
+        .set('Authorization', helpers.makeAuthHeader(testUser))
+        .expect(400, { error: 'Request id must be a number' });
+    });
+
+    it('returns 400 unauthorized when no user credentials', () => {
+      return supertest(app)
+        .delete('/api/entry/1')
+        .expect(401, { error: 'Missing bearer token' });
     });
   });
 });
