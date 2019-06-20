@@ -60,7 +60,6 @@ describe('Entry', () => {
         .send( entry )
         .expect(201)
         .expect(res => {
-          console.log('RES BODY: ', res.body);
           expect(res.body).to.have.property('id');
           expect(res.body.text).to.eql(entry.text);
           expect(res.body.happiness).to.eql(entry.happiness);
