@@ -9,5 +9,7 @@ module.exports = {
   TEST_DATABASE_URL: process.env.TEST_DATABASE_URL,
 
   FACE_KEY: process.env.FACE_KEY,
-  FACE_SECRET: process.env.FACE_SECRET
+  FACE_SECRET: process.env.FACE_SECRET,
+
+  AZURE_KEY: process.env.AZURE_KEY
 };

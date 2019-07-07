@@ -145,4 +145,24 @@ EntryRouter
       .catch(next);
   });
 
+
+EntryRouter
+  .route('/face')
+  .post(requireAuth, jsonBodyParser, (req, res, next) => {
+
+    axios.post('https://centralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceAttributes=emotion', {
+      url: req.body.selfie_url
+    },
+    {
+      headers: {
+        'content-type': 'application/json',
+        'Ocp-Apim-Subscription-Key': `${config.AZURE_KEY}`
+      }
+    })
+      .then((response) => {
+        return res.status(200).json(response.data);
+      })
+      .catch(next);
+  });
+
 module.exports = EntryRouter;
